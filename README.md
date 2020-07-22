@@ -17,8 +17,8 @@
 * Xivic - Web front-end development
 * Cheng Hui - IoT development
 * XGame - Network development
-* JesseHealth - Tech Leader
-* Fission - Tech Leader
+* JesseHealth - Server development
+* Fission - Infrastructure development
 
 
 ### Status

@@ -1,11 +1,3 @@
-### YIN PAN
-* 1994-10-07 - 天秤座</br>
-* 湖南省常德市 - 广东省广州市</br>
-* 华南师范学院 (SCNU) - 心理学</br>
-* xivistudios@gmail.com</br>
-
-
-### Language
 ![WebAssembly](https://badgen.net/badge/Language/WebAssembly/blue?icon=visualstudio&label)
 ![JavaScript](https://badgen.net/badge/Language/JavaScript/cyan?icon=visualstudio&label)
 ![TypeScript](https://badgen.net/badge/Language/TypeScript?icon=typescript&label)
@@ -15,6 +7,11 @@
 ![Python](https://badgen.net/badge/Language/Python/blue?icon=visualstudio&label)
 ![Scala](https://badgen.net/badge/Language/Scala/black?icon=visualstudio&label)
 
+### YIN PAN
+* 1994-10-07 - 天秤座</br>
+* 湖南省常德市 - 广东省广州市</br>
+* 华南师范学院 (SCNU) - 心理学</br>
+
 
 ### Experience
 * Xivic - Web front-end development
@@ -22,3 +19,7 @@
 * XGame - Network development
 * JesseHealth - Tech Leader
 * Fission - Tech Leader
+
+
+### Status
+I am finding a new job.

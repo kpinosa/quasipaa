@@ -11,7 +11,6 @@
 ### Experience
 * Xivic - Web front-end development
 * Cheng Hui - IoT development
-* XGame - Network development
 * JesseHealth - Server development
 * Fission - Infrastructure development
 

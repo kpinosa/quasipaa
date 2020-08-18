@@ -13,7 +13,3 @@
 * Cheng Hui - IoT development
 * JesseHealth - Server development
 * Fission - Infrastructure development
-
-
-### Status
-I am finding a new job.

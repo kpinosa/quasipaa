@@ -5,10 +5,3 @@
 ![Go](https://badgen.net/badge/Language/Go/grey?icon=visualstudio&label)
 ![Python](https://badgen.net/badge/Language/Python/blue?icon=visualstudio&label)
 ![Scala](https://badgen.net/badge/Language/Scala/black?icon=visualstudio&label)
-
-
-### Experience
-* Xivic - Web front-end development
-* Cheng Hui - IoT development
-* JesseHealth - Server development
-* Fission - Infrastructure development

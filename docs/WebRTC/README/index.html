@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="zine-version" content="0.9.0"/>
+    <title>WebRTC Build.GN</title>
+<meta name="description" content="将此设置为 true 将使 RTC_EXPORT 扩展为管理符号可见性的代码.
+">
+<meta property="og:type" content="website">
+<meta property="og:title" content="WebRTC Build.GN">
+<meta property="og:description" content="将此设置为 true 将使 RTC_EXPORT 扩展为管理符号可见性的代码.
+">
+<meta name="twitter:title" content="WebRTC Build.GN">
+<meta name="twitter:description" content="将此设置为 true 将使 RTC_EXPORT 扩展为管理符号可见性的代码.
+">
+<meta property="og:url" content="http://localhost/WebRTC/README">
+<meta property="twitter:url" content="http://localhost/WebRTC/README">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="http://localhosthttps://discourse.itk.org/uploads/default/original/1X/badb74a44c658fa383fee19617d03e59d40d1b73.png">
+<meta name="twitter:image" content="http://localhosthttps://discourse.itk.org/uploads/default/original/1X/badb74a44c658fa383fee19617d03e59d40d1b73.png">
+<link rel="icon" type="image/png" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/theme.css"><link rel="stylesheet" href="/static/zine.css">
+    <link rel="alternate" type="application/atom+xml" title="Mr.Panda RSS" href="/feed.xml">
+    <style>
+    :root {
+        --primary-color: #2563eb;
+        --main-color: #ffffff;
+        --link-color: #2563eb;
+        --secondary-color: #eff3f7;
+    }
+    </style>
+</head>
+
+<body class="h-full bg-secondary">
+    <div class="zine-header bg-primary text-main font-bold text-center z-0"
+        style="background-image: url('/static/background.jpg')">
+    <header class="p-8 md:p-10">
+            <div class="zine-brand text-4xl lg:text-5xl">
+                <a href="/">Mr.Panda</a>
+            </div>
+            <ul class="zine-menu">
+                </ul>
+        </header>
+        <div class="zine-space w-full h-32 md:h-36 lg:h-44 xl:h-48 2xl:h-56"></div>
+    </div>
+    <main
+        class="pb-10 -translate-y-32 lg:-translate-y-36 xl:-translate-y-44 2xl:-translate-y-56 mx-auto sm:max-w-scree-md md:max-w-screen-lg">
+        <div class="px-4 pb-10 md:px-8 md:pb-14 mx-4 my-6 bg-white shadow-xl shadow-slate-700/10 ring-1 ring-gray-900/5">
+    <div
+        class="sticky z-10 py-4 top-32 lg:top-36 xl:top-44 2xl:top-56 bg-white border-dashed border-b border-slate-300">
+        <div class="ml-1 md:ml-2 flex justify-between items-center">
+            <div class="zine-breadcrumb">
+                <a class="zine-diamond before:block before:absolute before:-inset-1 before:-skew-x-6 before:bg-primary relative inline-block transition sm:hover:scale-110 duration-500"
+                    href="/WebRTC">
+                    <div class="relative text-main px-4">WebRTC</div>
+                </a>
+                <span class="ml-2 text-gray-700">/ 第 ⁨1⁩ 篇</span>
+            </div>
+            <div>
+                <div class="flex items-center">
+                    <div id="toc-menu" class="ml-1 md:ml-2 p-2 cursor-pointer rounded hover:bg-gray-200">
+                       <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true">
+                            <path fill-rule="evenodd"
+                                d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    </div>
+                <div id="toc-list"
+                    class="absolute hidden right-0 flex flex-col max-w-screen-sm max-h-96 w-60 py-2 my-4 border bg-white rounded z-[99999] shadow-xl">
+                    <div class="px-2 overflow-y-auto">
+                        <a href="#rtc_enable_symbol_export-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_symbol_export = false</div>
+                            </a>
+                        <a href="#rtc_dlog_always_on-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_dlog_always_on = false</div>
+                            </a>
+                        <a href="#rtc_enable_objc_symbol_export-=-rtc_enable_symbol_export">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_objc_symbol_export = rtc_enable_symbol_export</div>
+                            </a>
+                        <a href="#build_with_chromium-=-rtc_exclude_field_trial_default-=-!is_nacl-&&-!is_chromecast">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">build_with_chromium = rtc_exclude_field_trial_default = !is_nacl && !is_chromecast</div>
+                            </a>
+                        <a href="#rtc_exclude_metrics_default-=-build_with_chromium">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_exclude_metrics_default = build_with_chromium</div>
+                            </a>
+                        <a href="#rtc_exclude_system_time-=-build_with_chromium">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_exclude_system_time = build_with_chromium</div>
+                            </a>
+                        <a href="#rtc_builtin_ssl_root_certificates-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_builtin_ssl_root_certificates = true</div>
+                            </a>
+                        <a href="#rtc_include_ilbc-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_ilbc = true</div>
+                            </a>
+                        <a href="#rtc_include_opus-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_opus = true</div>
+                            </a>
+                        <a href="#rtc_opus_support_120ms_ptime-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_opus_support_120ms_ptime = true</div>
+                            </a>
+                        <a href="#rtc_opus_variable_complexity-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_opus_variable_complexity = false</div>
+                            </a>
+                        <a href="#rtc_jsoncpp_root-=-“//third_party/jsoncpp/source/include”">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_jsoncpp_root = “//third_party/jsoncpp/source/include”</div>
+                            </a>
+                        <a href="#rtc_ssl_root-=-“”">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_ssl_root = “”</div>
+                            </a>
+                        <a href="#rtc_enable_external_auth-=-build_with_chromium">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_external_auth = build_with_chromium</div>
+                            </a>
+                        <a href="#apm_debug_dump-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">apm_debug_dump = false</div>
+                            </a>
+                        <a href="#rtc_exclude_audio_processing_module-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_exclude_audio_processing_module = false</div>
+                            </a>
+                        <a href="#rtc_enable_bwe_test_logging-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_bwe_test_logging = false</div>
+                            </a>
+                        <a href="#rtc_build_examples-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_examples = true</div>
+                            </a>
+                        <a href="#rtc_build_tools-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_tools = true</div>
+                            </a>
+                        <a href="#rtc_use_x11-=-ozone_platform_x11">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_x11 = ozone_platform_x11</div>
+                            </a>
+                        <a href="#rtc_use_pipewire-=-is_linux-&&-use_sysroot">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_pipewire = is_linux && use_sysroot</div>
+                            </a>
+                        <a href="#rtc_link_pipewire-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_link_pipewire = false</div>
+                            </a>
+                        <a href="#build_with_mozilla-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">build_with_mozilla = false</div>
+                            </a>
+                        <a href="#rtc_enable_android_aaudio-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_android_aaudio = false</div>
+                            </a>
+                        <a href="#rtc_sanitize_coverage-=-“”">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_sanitize_coverage = “”</div>
+                            </a>
+                        <a href="#rtc_prefer_fixed_point-=-current_cpu-==-“arm”-||-current_cpu-==-“arm64”">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_prefer_fixed_point = current_cpu == “arm” || current_cpu == “arm64”</div>
+                            </a>
+                        <a href="#rtc_build_with_neon-=-(current_cpu-==-“arm”-&&-arm_use_neon)-||-current_cpu-==-“arm64”">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_with_neon = (current_cpu == “arm” && arm_use_neon) || current_cpu == “arm64”</div>
+                            </a>
+                        <a href="#rtc_use_h264-=-proprietary_codecs-&&-!is_android-&&-!is_ios-&&-!(is_win-&&-!is_clang)">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_h264 = proprietary_codecs && !is_android && !is_ios && !(is_win && !is_clang)</div>
+                            </a>
+                        <a href="#rtc_use_absl_mutex-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_absl_mutex = false</div>
+                            </a>
+                        <a href="#rtc_use_dummy_audio_file_devices-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_dummy_audio_file_devices = false</div>
+                            </a>
+                        <a href="#rtc_audio_device_plays_sinus_tone-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_audio_device_plays_sinus_tone = false</div>
+                            </a>
+                        <a href="#rtc_ios_macos_use_opengl_rendering-=-!(is_ios-&&-target_environment-==-“catalyst”)">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_ios_macos_use_opengl_rendering = !(is_ios && target_environment == “catalyst”)</div>
+                            </a>
+                        <a href="#rtc_include_builtin_audio_codecs-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_builtin_audio_codecs = true</div>
+                            </a>
+                        <a href="#rtc_include_builtin_video_codecs-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_builtin_video_codecs = true</div>
+                            </a>
+                        <a href="#rtc_win_undef_unicode-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_win_undef_unicode = false</div>
+                            </a>
+                        <a href="#rtc_enable_win_wgc-=-is_win">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_win_wgc = is_win</div>
+                            </a>
+                        <a href="#rtc_include_dav1d_in_internal_decoder_factory-=-true">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_dav1d_in_internal_decoder_factory = true</div>
+                            </a>
+                        <a href="#rtc_enable_protobuf-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_protobuf = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_enable_sctp-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_sctp = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_build_json-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_json = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_build_libsrtp-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_libsrtp = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_build_libvpx-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_libvpx = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_libvpx_build_vp9-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_libvpx_build_vp9 = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_build_opus-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_opus = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_build_ssl-=-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_ssl = !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_include_pulse_audio-=-!build_with_chromium">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_pulse_audio = !build_with_chromium</div>
+                            </a>
+                        <a href="#rtc_include_internal_audio_device-=-!build_with_chromium">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_internal_audio_device = !build_with_chromium</div>
+                            </a>
+                        <a href="#rtc_enable_avx2-=-is_clang">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_enable_avx2 = is_clang</div>
+                            </a>
+                        <a href="#rtc_include_tests-=-!build_with_chromium-&&-!build_with_mozilla">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_include_tests = !build_with_chromium && !build_with_mozilla</div>
+                            </a>
+                        <a href="#rtc_use_x11_extensions-=-rtc_use_x11">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_use_x11_extensions = rtc_use_x11</div>
+                            </a>
+                        <a href="#rtc_disable_logging-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_disable_logging = false</div>
+                            </a>
+                        <a href="#rtc_disable_trace_events-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_disable_trace_events = false</div>
+                            </a>
+                        <a href="#rtc_disable_check_msg-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_disable_check_msg = false</div>
+                            </a>
+                        <a href="#rtc_disable_metrics-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_disable_metrics = false</div>
+                            </a>
+                        <a href="#rtc_exclude_transient_suppressor-=-false">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_exclude_transient_suppressor = false</div>
+                            </a>
+                        <a href="#rtc_build_dcsctp-=-!build_with_mozilla-&&-rtc_enable_sctp">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_dcsctp = !build_with_mozilla && rtc_enable_sctp</div>
+                            </a>
+                        <a href="#rtc_build_usrsctp-=-!build_with_mozilla-&&-rtc_enable_sctp">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_build_usrsctp = !build_with_mozilla && rtc_enable_sctp</div>
+                            </a>
+                        <a href="#rtc_desktop_capture_supported-=-(is_win-&&-current_os-!=-“winuwp”)-||-is_mac-||-((is_linux-||-is_chromeos)-&&-(rtc_use_x11_extensions-||-rtc_use_pipewire))">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">rtc_desktop_capture_supported = (is_win && current_os != “winuwp”) || is_mac || ((is_linux || is_chromeos) && (rtc_use_x11_extensions || rtc_use_pipewire))</div>
+                            </a>
+                        </div>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div class="pt-10">
+        <div class="prose mx-auto">
+            <div class="zine-article-title text-2xl md:text-4xl font-extrabold leading-tight mb-8 text-center">
+                WebRTC Build.GN
+            </div>
+            <div class="flex items-center justify-between text-gray-500">
+                <span>2022-12-29</span>
+                <div class="flex items-center">
+    <span>Mr.Panda</span>
+    </div>
+
+            </div>
+            <div class="zine-topic bg-secondary my-2 py-2 px-2 text-center">
+                
+                    <a class="p-2 !text-main" href="/topic/webrtc">#webrtc</a>
+                
+            </div>
+            </div>
+        <article class="prose mx-auto my-12">
+            <h3 id="rtc_enable_symbol_export-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_symbol_export = false
+    <a href="#rtc_enable_symbol_export-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 将使 <code>RTC_EXPORT</code> 扩展为管理符号可见性的代码.
+请参阅 <code>rtc_base/system/rtc_export.h</code></p>
+</blockquote>
+<h3 id="rtc_dlog_always_on-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_dlog_always_on = false
+    <a href="#rtc_dlog_always_on-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将其设置为 <code>true</code>，将使 <code>RTC_DLOG()</code> 扩展为日志语句，而不是被预处理器删除，这很有用，例如能够在发布版本上获取 <code>RTC_DLOG</code>.</p>
+</blockquote>
+<h3 id="rtc_enable_objc_symbol_export-=-rtc_enable_symbol_export" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_objc_symbol_export = rtc_enable_symbol_export
+    <a href="#rtc_enable_objc_symbol_export-=-rtc_enable_symbol_export" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 将使 <code>RTC_OBJC_EXPORT</code> 扩展为管理符号可见性的代码. 默认情况下，如果是C++ 符号，则导出 <code>Obj-C/Obj-C++</code> 符号，但将此 设置为 <code>true</code> 同时保持 <code>rtc_enable_symbol_export=false</code> 将仅导出 <code>RTC_OBJC_EXPORT</code> 带注释的符号.</p>
+</blockquote>
+<h3 id="build_with_chromium-=-rtc_exclude_field_trial_default-=-!is_nacl-&&-!is_chromecast" class="toc-item flex items-center group scroll-mt-20">
+    build_with_chromium = rtc_exclude_field_trial_default = !is_nacl &amp;&amp; !is_chromecast
+    <a href="#build_with_chromium-=-rtc_exclude_field_trial_default-=-!is_nacl-&&-!is_chromecast" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 将定义 <code>WEBRTC_EXCLUDE_FIELD_TRIAL_DEFAULT</code>，这将告诉预处理器删除使用 <code>field_trial</code>所需的符号的默认定义. 在这种情况下，需要提供新的实现.
+当 WebRTC 作为 Chromium 的一部分构建时，它应该排除 <code>field_trial</code> 的默认实现， 除非它是为 <code>NACL</code>或 <code>Chromecast</code> 构建的.</p>
+</blockquote>
+<h3 id="rtc_exclude_metrics_default-=-build_with_chromium" class="toc-item flex items-center group scroll-mt-20">
+    rtc_exclude_metrics_default = build_with_chromium
+    <a href="#rtc_exclude_metrics_default-=-build_with_chromium" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 将定义 <code>WEBRTC_EXCLUDE_METRICS_DEFAULT</code>，这将告诉预处理器删除使用指标所需的符号的默认定义. 
+在这种情况下，需要提供新的实现.</p>
+</blockquote>
+<h3 id="rtc_exclude_system_time-=-build_with_chromium" class="toc-item flex items-center group scroll-mt-20">
+    rtc_exclude_system_time = build_with_chromium
+    <a href="#rtc_exclude_system_time-=-build_with_chromium" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 将定义 <code>WEBRTC_EXCLUDE_SYSTEM_TIME</code>，这将告诉预处理器删除<code>rtc_base/system_time.cc</code> 中定义的 <code>SystemTimeNanos()</code> 的默认定义. 
+在这种情况下，需要提供新的实现.</p>
+</blockquote>
+<h3 id="rtc_builtin_ssl_root_certificates-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_builtin_ssl_root_certificates = true
+    <a href="#rtc_builtin_ssl_root_certificates-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>false</code> 将要求 API 用户传入他们自己的 <code>SSLCertificateVerifier</code> 以验证从 TLS-TURN 服务器提供的证书. 
+作为回报，禁用它可以在二进制文件中节省大约 100kb.</p>
+</blockquote>
+<h3 id="rtc_include_ilbc-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_ilbc = true
+    <a href="#rtc_include_ilbc-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>包括 <code>iLBC</code> 音频编解码器.</p>
+</blockquote>
+<h3 id="rtc_include_opus-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_opus = true
+    <a href="#rtc_include_opus-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>禁用此项以避免构建 <code>Opus</code> 音频编解码器.</p>
+</blockquote>
+<h3 id="rtc_opus_support_120ms_ptime-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_opus_support_120ms_ptime = true
+    <a href="#rtc_opus_support_120ms_ptime-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>如果构建 WebRTC 的 <code>Opus</code> 版本支持对 <code>120ms</code> 数据包的直接编码，请启用此选项.</p>
+</blockquote>
+<h3 id="rtc_opus_variable_complexity-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_opus_variable_complexity = false
+    <a href="#rtc_opus_variable_complexity-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>启用此选项可让 <code>Opus</code> 音频编解码器动态更改复杂性.</p>
+</blockquote>
+<h3 id="rtc_jsoncpp_root-=-“//third_party/jsoncpp/source/include”" class="toc-item flex items-center group scroll-mt-20">
+    rtc_jsoncpp_root = “//third_party/jsoncpp/source/include”
+    <a href="#rtc_jsoncpp_root-=-“//third_party/jsoncpp/source/include”" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>用于在不编译 WebRTC 自带的库时指定外部 <code>Jsoncpp</code> 包含路径.
+即 <code>rtc_build_json == 0</code></p>
+</blockquote>
+<h3 id="rtc_ssl_root-=-“”" class="toc-item flex items-center group scroll-mt-20">
+    rtc_ssl_root = “”
+    <a href="#rtc_ssl_root-=-“”" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>用于在不编译 WebRTC 附带的库时指定外部 <code>OpenSSL</code> 包含路径.
+即 <code>rtc_build_ssl == 0</code></p>
+</blockquote>
+<h3 id="rtc_enable_external_auth-=-build_with_chromium" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_external_auth = build_with_chromium
+    <a href="#rtc_enable_external_auth-=-build_with_chromium" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>当使用外部认证机制而不是 <code>libsrtp</code> 对 <code>RTP</code> 数据包执行数据包认证时启用.</p>
+</blockquote>
+<h3 id="apm_debug_dump-=-false" class="toc-item flex items-center group scroll-mt-20">
+    apm_debug_dump = false
+    <a href="#apm_debug_dump-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>选择是否应生成音频处理模块的调试转储.</p>
+</blockquote>
+<h3 id="rtc_exclude_audio_processing_module-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_exclude_audio_processing_module = false
+    <a href="#rtc_exclude_audio_processing_module-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>选择是否应排除音频处理模块.</p>
+</blockquote>
+<h3 id="rtc_enable_bwe_test_logging-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_bwe_test_logging = false
+    <a href="#rtc_enable_bwe_test_logging-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以启用 <code>BWE</code> 测试日志记录.</p>
+</blockquote>
+<h3 id="rtc_build_examples-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_examples = true
+    <a href="#rtc_build_examples-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>false</code> 以跳过构建示例.</p>
+</blockquote>
+<h3 id="rtc_build_tools-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_tools = true
+    <a href="#rtc_build_tools-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>false</code> 以跳过构建工具.</p>
+</blockquote>
+<h3 id="rtc_use_x11-=-ozone_platform_x11" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_x11 = ozone_platform_x11
+    <a href="#rtc_use_x11-=-ozone_platform_x11" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>false</code> 以跳过构建需要 <code>X11</code> 的代码.</p>
+</blockquote>
+<h3 id="rtc_use_pipewire-=-is_linux-&&-use_sysroot" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_pipewire = is_linux &amp;&amp; use_sysroot
+    <a href="#rtc_use_pipewire-=-is_linux-&&-use_sysroot" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将其设置为在 <code>Wayland</code> 显示服务器上使用 <code>PipeWire</code>。 默认情况下，它仅在桌面 Linux（不包括 ChromeOS）上启用，并且仅在使用 <code>sysroot</code> 时才启用，因为 <code>PipeWire</code> 在较旧且受支持的 Ubuntu 和 Debian 发行版中不可用.</p>
+</blockquote>
+<h3 id="rtc_link_pipewire-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_link_pipewire = false
+    <a href="#rtc_link_pipewire-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将其设置为直接链接 <code>PipeWire</code> 和所需的库，而不是使用 <code>dlopen</code>.</p>
+</blockquote>
+<h3 id="build_with_mozilla-=-false" class="toc-item flex items-center group scroll-mt-20">
+    build_with_mozilla = false
+    <a href="#build_with_mozilla-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>启用以使用 <code>Mozilla</code> 内部设置.</p>
+</blockquote>
+<h3 id="rtc_enable_android_aaudio-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_android_aaudio = false
+    <a href="#rtc_enable_android_aaudio-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>实验性：启用需要 <code>Android SDK 26</code> 或更高版本和 <code>NDK r16</code> 或更高版本的 <code>Android AAudio</code>.</p>
+</blockquote>
+<h3 id="rtc_sanitize_coverage-=-“”" class="toc-item flex items-center group scroll-mt-20">
+    rtc_sanitize_coverage = “”
+    <a href="#rtc_sanitize_coverage-=-“”" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>为覆盖生成设置为<code>func</code>、<code>block</code>、<code>edge</code>，在单元测试运行时设置 <code>UBSAN_OPTIONS=&quot;coverage=1&quot;</code>， 建议设置 <code>include_examples=0</code>， 将 <code>llvm</code> 的 <code>sancov -html-report</code> 用于人类可读的报告.
+请参阅 <a href="http://clang.llvm.org/docs/SanitizerCoverage.html">http://clang.llvm.org/docs/SanitizerCoverage.html</a></p>
+</blockquote>
+<h3 id="rtc_prefer_fixed_point-=-current_cpu-==-“arm”-||-current_cpu-==-“arm64”" class="toc-item flex items-center group scroll-mt-20">
+    rtc_prefer_fixed_point = current_cpu == “arm” || current_cpu == “arm64”
+    <a href="#rtc_prefer_fixed_point-=-current_cpu-==-“arm”-||-current_cpu-==-“arm64”" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>尽可能选择定点代码.</p>
+</blockquote>
+<h3 id="rtc_build_with_neon-=-(current_cpu-==-“arm”-&&-arm_use_neon)-||-current_cpu-==-“arm64”" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_with_neon = (current_cpu == “arm” &amp;&amp; arm_use_neon) || current_cpu == “arm64”
+    <a href="#rtc_build_with_neon-=-(current_cpu-==-“arm”-&&-arm_use_neon)-||-current_cpu-==-“arm64”" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>确定是否构建 <code>NEON</code> 代码.</p>
+</blockquote>
+<h3 id="rtc_use_h264-=-proprietary_codecs-&&-!is_android-&&-!is_ios-&&-!(is_win-&&-!is_clang)" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_h264 = proprietary_codecs &amp;&amp; !is_android &amp;&amp; !is_ios &amp;&amp; !(is_win &amp;&amp; !is_clang)
+    <a href="#rtc_use_h264-=-proprietary_codecs-&&-!is_android-&&-!is_ios-&&-!(is_win-&&-!is_clang)" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>启用它以构建 <code>OpenH264</code> 编码器或者<code>FFmpeg</code> 解码器。 这在除 <code>Android</code> 和 <code>iOS</code> 之外的所有平台上都受支持。 因为 <code>FFmpeg</code> 可以在有或者没有 <code>H.264</code> 支持的情况下构建，所以 <code>ffmpeg_branding</code> 必须单独设置为包含 H.264 的值，例如<code>Chrome</code>. 如果 <code>FFmpeg</code> 是在没有 <code>H.264</code> 的情况下构建的，编译成功但 <code>H264DecoderImpl</code> 无法初始化。 在构建之前检查 <code>openh264</code>、<code>ffmpeg</code> 和 <code>H.264</code> 许可证/专利. <a href="http://www.openh264.org,">http://www.openh264.org,</a> <a href="https://www.ffmpeg.org/">https://www.ffmpeg.org/</a>
+当前不支持在使用 <code>MSVC</code> 构建时启用 <code>H264</code>，有关详细信息，请参阅 <a href="bugs.webrtc.org/9213#c13">bugs.webrtc.org/9213#c13</a>.</p>
+</blockquote>
+<h3 id="rtc_use_absl_mutex-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_absl_mutex = false
+    <a href="#rtc_use_absl_mutex-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>启用此标志使 <code>webrtc::Mutex</code> 由 <code>absl::Mutex</code> 实现.</p>
+</blockquote>
+<h3 id="rtc_use_dummy_audio_file_devices-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_dummy_audio_file_devices = false
+    <a href="#rtc_use_dummy_audio_file_devices-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>默认情况下，使用普通平台音频支持或虚拟音频，但不要使用基于文件的音频播放和录制.</p>
+</blockquote>
+<h3 id="rtc_audio_device_plays_sinus_tone-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_audio_device_plays_sinus_tone = false
+    <a href="#rtc_audio_device_plays_sinus_tone-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>设置为 <code>true</code> 时，将音频输出替换为 <code>440Hz</code> 的正弦音. <code>ADM</code> 将从 WebRTC 请求音频数据，但不是从 <code>NetEQ</code> 读取真实音频样本，而是生成正弦音并替换真实音频样本.</p>
+</blockquote>
+<h3 id="rtc_ios_macos_use_opengl_rendering-=-!(is_ios-&&-target_environment-==-“catalyst”)" class="toc-item flex items-center group scroll-mt-20">
+    rtc_ios_macos_use_opengl_rendering = !(is_ios &amp;&amp; target_environment == “catalyst”)
+    <a href="#rtc_ios_macos_use_opengl_rendering-=-!(is_ios-&&-target_environment-==-“catalyst”)" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>确定 <code>OpenGL</code> 在 <code>iOS/macOS</code> 上是否可用.</p>
+</blockquote>
+<h3 id="rtc_include_builtin_audio_codecs-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_builtin_audio_codecs = true
+    <a href="#rtc_include_builtin_audio_codecs-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>当设置为 <code>false</code> 时，内置音频编码器/解码器工厂及其依赖的所有音频编解码器将不会包含在 <code>libwebrtc</code>中（它们仍将包含在 <code>libjingle_peerconnection_so.so</code> 和 <code>WebRTC.framework</code> 中）</p>
+</blockquote>
+<h3 id="rtc_include_builtin_video_codecs-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_builtin_video_codecs = true
+    <a href="#rtc_include_builtin_video_codecs-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>当设置为 <code>false</code> 时，内置视频编码器/解码器工厂及其依赖的所有视频编解码器将不会包含在 <code>libwebrtc</code>中（它们仍将包含在 <code>libjingle_peerconnection_so.so</code> 和 <code>WebRTC.framework</code> 中）</p>
+</blockquote>
+<h3 id="rtc_win_undef_unicode-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_win_undef_unicode = false
+    <a href="#rtc_win_undef_unicode-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>当设置为 <code>true</code> 并在独立构建中时，它将取消定义 <code>UNICODE</code> 和 <code>_UNICODE</code>（它们始终由 <code>Chromium Windows</code> 工具链全局定义）.
+这仅用于测试目的，WebRTC 希望确保它不假定 <code>/DUNICODE</code> 和 <code>/D_UNICODE</code>，而是明确使用宽字符函数.</p>
+</blockquote>
+<h3 id="rtc_enable_win_wgc-=-is_win" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_win_wgc = is_win
+    <a href="#rtc_enable_win_wgc-=-is_win" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>当设置为 <code>true</code> 时，使用 <code>Windows.Graphics.Capture API</code> 的捕获器实现将可供使用。 这引入了对 <code>Win 10 SDK v10.0.17763.0</code> 的依赖.</p>
+</blockquote>
+<h3 id="rtc_include_dav1d_in_internal_decoder_factory-=-true" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_dav1d_in_internal_decoder_factory = true
+    <a href="#rtc_include_dav1d_in_internal_decoder_factory-=-true" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>设置为 <code>true</code> 时，在内部解码器工厂中包含 <code>dav1d</code> 解码器.</p>
+</blockquote>
+<h3 id="rtc_enable_protobuf-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_protobuf = !build_with_mozilla
+    <a href="#rtc_enable_protobuf-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>允许使用<code>protobuf</code>进行调试记录.</p>
+</blockquote>
+<h3 id="rtc_enable_sctp-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_sctp = !build_with_mozilla
+    <a href="#rtc_enable_sctp-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>设置此项以禁用支持 <code>SCTP</code> 数据通道的构建.</p>
+</blockquote>
+<h3 id="rtc_build_json-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_json = !build_with_mozilla
+    <a href="#rtc_build_json-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><h3 id="rtc_build_libsrtp-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_libsrtp = !build_with_mozilla
+    <a href="#rtc_build_libsrtp-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><h3 id="rtc_build_libvpx-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_libvpx = !build_with_mozilla
+    <a href="#rtc_build_libvpx-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><h3 id="rtc_libvpx_build_vp9-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_libvpx_build_vp9 = !build_with_mozilla
+    <a href="#rtc_libvpx_build_vp9-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><h3 id="rtc_build_opus-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_opus = !build_with_mozilla
+    <a href="#rtc_build_opus-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><h3 id="rtc_build_ssl-=-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_ssl = !build_with_mozilla
+    <a href="#rtc_build_ssl-=-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>禁用这些以不构建可以从外部提供的组件.</p>
+</blockquote>
+<h3 id="rtc_include_pulse_audio-=-!build_with_chromium" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_pulse_audio = !build_with_chromium
+    <a href="#rtc_include_pulse_audio-=-!build_with_chromium" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>排除在 Chromium 中，因为它的先决条件不需要 <code>Pulse Audio</code>.</p>
+</blockquote>
+<h3 id="rtc_include_internal_audio_device-=-!build_with_chromium" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_internal_audio_device = !build_with_chromium
+    <a href="#rtc_include_internal_audio_device-=-!build_with_chromium" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>Chromium 使用自己的 IO 处理，因此内部 <code>ADM</code> 仅为独立的 WebRTC 构建.</p>
+</blockquote>
+<h3 id="rtc_enable_avx2-=-is_clang" class="toc-item flex items-center group scroll-mt-20">
+    rtc_enable_avx2 = is_clang
+    <a href="#rtc_enable_avx2-=-is_clang" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以在 webrtc 中启用 <code>avx2</code> 支持.
+TODO：确保 <code>AVX2</code> 也适用于非 <code>clang</code> 编译器.</p>
+</blockquote>
+<h3 id="rtc_include_tests-=-!build_with_chromium-&&-!build_with_mozilla" class="toc-item flex items-center group scroll-mt-20">
+    rtc_include_tests = !build_with_chromium &amp;&amp; !build_with_mozilla
+    <a href="#rtc_include_tests-=-!build_with_chromium-&&-!build_with_mozilla" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以构建单元测试。 使用 Chromium 或 Mozilla 构建时禁用.</p>
+</blockquote>
+<h3 id="rtc_use_x11_extensions-=-rtc_use_x11" class="toc-item flex items-center group scroll-mt-20">
+    rtc_use_x11_extensions = rtc_use_x11
+    <a href="#rtc_use_x11_extensions-=-rtc_use_x11" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>false</code> 以跳过还需要 <code>X11</code> 扩展（例如 <code>Xdamage</code>、<code>Xfixes</code>）的构建代码.</p>
+</blockquote>
+<h3 id="rtc_disable_logging-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_disable_logging = false
+    <a href="#rtc_disable_logging-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以完全从 WebRTC 中删除日志记录.</p>
+</blockquote>
+<h3 id="rtc_disable_trace_events-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_disable_trace_events = false
+    <a href="#rtc_disable_trace_events-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以禁用堆栈跟踪事件.</p>
+</blockquote>
+<h3 id="rtc_disable_check_msg-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_disable_check_msg = false
+    <a href="#rtc_disable_check_msg-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以禁用详细的错误消息和 <code>RTC_CHECKs</code> 的日志记录.</p>
+</blockquote>
+<h3 id="rtc_disable_metrics-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_disable_metrics = false
+    <a href="#rtc_disable_metrics-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以禁用 webrtc 指标.</p>
+</blockquote>
+<h3 id="rtc_exclude_transient_suppressor-=-false" class="toc-item flex items-center group scroll-mt-20">
+    rtc_exclude_transient_suppressor = false
+    <a href="#rtc_exclude_transient_suppressor-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>将此设置为 <code>true</code> 以从构建中排除音频处理模块中的瞬态抑制器.</p>
+</blockquote>
+<h3 id="rtc_build_dcsctp-=-!build_with_mozilla-&&-rtc_enable_sctp" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_dcsctp = !build_with_mozilla &amp;&amp; rtc_enable_sctp
+    <a href="#rtc_build_dcsctp-=-!build_with_mozilla-&&-rtc_enable_sctp" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>为数据通道和相关单元测试启用 <code>dcsctp</code> 后端.</p>
+</blockquote>
+<h3 id="rtc_build_usrsctp-=-!build_with_mozilla-&&-rtc_enable_sctp" class="toc-item flex items-center group scroll-mt-20">
+    rtc_build_usrsctp = !build_with_mozilla &amp;&amp; rtc_enable_sctp
+    <a href="#rtc_build_usrsctp-=-!build_with_mozilla-&&-rtc_enable_sctp" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>为数据通道和相关单元测试启用 <code>usrsctp</code> 后端.</p>
+</blockquote>
+<h3 id="rtc_desktop_capture_supported-=-(is_win-&&-current_os-!=-“winuwp”)-||-is_mac-||-((is_linux-||-is_chromeos)-&&-(rtc_use_x11_extensions-||-rtc_use_pipewire))" class="toc-item flex items-center group scroll-mt-20">
+    rtc_desktop_capture_supported = (is_win &amp;&amp; current_os != “winuwp”) || is_mac || ((is_linux || is_chromeos) &amp;&amp; (rtc_use_x11_extensions || rtc_use_pipewire))
+    <a href="#rtc_desktop_capture_supported-=-(is_win-&&-current_os-!=-“winuwp”)-||-is_mac-||-((is_linux-||-is_chromeos)-&&-(rtc_use_x11_extensions-||-rtc_use_pipewire))" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3>
+<blockquote>
+<p>桌面捕获器仅在 <code>Windows</code>、<code>OSX</code> 和 <code>Linux</code> 上受支持.</p>
+</blockquote>
+
+        </article>
+        </div>
+</div>
+<div
+    class="inline-link-card absolute hidden border rounded bg-white shadow-xl mx-2 w-96 transition ease-in-out sm:hover:scale-105 duration-500">
+    <a class="inline-link-url">
+        <div class="">
+            <img class="inline-link-image w-full h-52 object-cover rounded-t">
+            <div class="inline-link-title font-bold p-4 line-clamp-2"></div>
+        </div>
+    </a>
+</div>
+<div class="mx-4">
+    <div class="giscus"></div>
+</div>
+<script
+    src="https://giscus.app/client.js"
+    data-repo="mycrl/Mycrl"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkyODE2MTQwNDc="
+    data-category="General"
+    data-category-id="DIC_kwDOEMkW384CTTQs"
+    data-mapping="title"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+</main>
+    <footer class="relative">
+        <div class="footer">
+    <a href="https://github.com/mycrl">
+        <svg aria-hidden="true" height="13" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true" class="octicon octicon-mark-github d-block mr-2 float-left">
+            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        @Mr.Panda
+    </a>
+</div>
+<a href="https://github.com/zineland"
+            class="absolute z-20 bottom-0 w-full text-center font-bold md:text-slate-100 md:opacity-10 md:hover:opacity-50 md:bg-transparent bg-primary p-2 text-main">
+            Proudly powered by Zine.
+        </a>
+    </footer>
+</body>
+<script src="/static/medium-zoom.min.js"></script>
+<script src="/static/zine.js"></script>
+</html>

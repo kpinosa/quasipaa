@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>http://localhost/</loc>
+    </url>
+    <url>
+        <loc>http://localhost/WebRTC/</loc>
+    </url>
+    <url>
+        <loc>http://localhost/WebRTC/README</loc>
+    </url>
+    <url>
+        <loc>http://localhost/authors/</loc>
+    </url>
+    <url>
+        <loc>http://localhost/@zine_team/</loc>
+    </url>
+    <url>
+        <loc>http://localhost/topics/</loc>
+    </url>
+    <url>
+        <loc>http://localhost/topic/webrtc/</loc>
+    </url>
+</urlset>

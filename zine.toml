@@ -1,0 +1,18 @@
+[site]
+url = "http://localhost"
+name = "Mr.Panda"
+description = ""
+locale = "zh"
+
+[authors]
+zine_team = { name = "Mr.Panda" }
+
+[theme]
+head_template = "templates/head.html"
+background_image = "/static/background.jpg"
+footer_template = "templates/footer.html"
+article_extend_template = "templates/article_extend.html"
+
+[topics.webrtc]
+name = "WebRTC"
+description = "With WebRTC, you can add real-time communication capabilities to your application that works on top of an open standard. It supports video, voice, and generic data to be sent between peers, allowing developers to build powerful voice- and video-communication solutions."

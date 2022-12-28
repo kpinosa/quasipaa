@@ -2,23 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Mr.Panda</title>
     <subtitle></subtitle>
-    <updated>2022-12-29T04:45:39.827097400+08:00</updated>
-    <id>http://localhost</id>
-    <link href="http://localhost/feed.xml" rel="self" type="application/atom+xml" />
-    <link href="http://localhost" rel="alternate" type="text/html" />
+    <updated>2022-12-29T04:50:49.507811500+08:00</updated>
+    <id>https://mycrl.github.io/Mycrl</id>
+    <link href="https://mycrl.github.io/Mycrl/feed.xml" rel="self" type="application/atom+xml" />
+    <link href="https://mycrl.github.io/Mycrl" rel="alternate" type="text/html" />
     <generator uri="https://github.com/zineland/zine" version="0.9.0">zine</generator>
     <author>
         <name>Mr.Panda</name>
-        <uri>http://localhost</uri>
+        <uri>https://mycrl.github.io/Mycrl</uri>
     </author>
 
     <entry>
         <title>WebRTC Build.GN</title>
-        <link rel="alternate" href="http://localhost/WebRTC/README" type="text/html" title="WebRTC Build.GN" />
+        <link rel="alternate" href="https://mycrl.github.io/Mycrl/WebRTC/README" type="text/html" title="WebRTC Build.GN" />
         <published>2022-12-29</published>
         <updated>2022-12-29</updated>
-        <id>http://localhost/WebRTC/README</id>
-        <content type="html" xml:base="http://localhost/WebRTC/README">
+        <id>https://mycrl.github.io/Mycrl/WebRTC/README</id>
+        <content type="html" xml:base="https://mycrl.github.io/Mycrl/WebRTC/README">
             <![CDATA[<h3 id="rtc_enable_symbol_export-=-false" class="toc-item flex items-center group scroll-mt-20">
     rtc_enable_symbol_export = false
     <a href="#rtc_enable_symbol_export-=-false" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"

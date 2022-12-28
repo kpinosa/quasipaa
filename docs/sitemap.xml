@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://localhost/</loc>
+        <loc>https://mycrl.github.io/Mycrl/</loc>
     </url>
     <url>
-        <loc>http://localhost/WebRTC/</loc>
+        <loc>https://mycrl.github.io/Mycrl/WebRTC/</loc>
     </url>
     <url>
-        <loc>http://localhost/WebRTC/README</loc>
+        <loc>https://mycrl.github.io/Mycrl/WebRTC/README</loc>
     </url>
     <url>
-        <loc>http://localhost/authors/</loc>
+        <loc>https://mycrl.github.io/Mycrl/authors/</loc>
     </url>
     <url>
-        <loc>http://localhost/@zine_team/</loc>
+        <loc>https://mycrl.github.io/Mycrl/@zine_team/</loc>
     </url>
     <url>
-        <loc>http://localhost/topics/</loc>
+        <loc>https://mycrl.github.io/Mycrl/topics/</loc>
     </url>
     <url>
-        <loc>http://localhost/topic/webrtc/</loc>
+        <loc>https://mycrl.github.io/Mycrl/topic/webrtc/</loc>
     </url>
 </urlset>

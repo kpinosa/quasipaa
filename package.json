@@ -1,0 +1,25 @@
+{
+    "name": "mycrl",
+    "version": "1.0.0",
+    "description": "mycrl github pages.",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "build": "zine build ./ ./docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mycrl/Mycrl.git"
+    },
+    "keywords": [
+        "github",
+        "pages"
+    ],
+    "author": "Mr.Panda",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mycrl/Mycrl/issues"
+    },
+    "homepage": "https://github.com/mycrl/Mycrl#readme"
+}

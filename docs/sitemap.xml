@@ -4,19 +4,31 @@
         <loc>https://mycrl.github.io/Mycrl/</loc>
     </url>
     <url>
-        <loc>https://mycrl.github.io/Mycrl/WebRTC/</loc>
+        <loc>https://mycrl.github.io/Mycrl/p2p/</loc>
     </url>
     <url>
-        <loc>https://mycrl.github.io/Mycrl/WebRTC/README</loc>
+        <loc>https://mycrl.github.io/Mycrl/p2p/stun_proto</loc>
+    </url>
+    <url>
+        <loc>https://mycrl.github.io/Mycrl/webrtc/</loc>
+    </url>
+    <url>
+        <loc>https://mycrl.github.io/Mycrl/webrtc/build_gn</loc>
+    </url>
+    <url>
+        <loc>https://mycrl.github.io/Mycrl/webrtc/customer_video_source</loc>
     </url>
     <url>
         <loc>https://mycrl.github.io/Mycrl/authors/</loc>
     </url>
     <url>
-        <loc>https://mycrl.github.io/Mycrl/@zine_team/</loc>
+        <loc>https://mycrl.github.io/Mycrl/@panda/</loc>
     </url>
     <url>
         <loc>https://mycrl.github.io/Mycrl/topics/</loc>
+    </url>
+    <url>
+        <loc>https://mycrl.github.io/Mycrl/topic/p2p/</loc>
     </url>
     <url>
         <loc>https://mycrl.github.io/Mycrl/topic/webrtc/</loc>

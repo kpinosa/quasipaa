@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="zine-version" content="0.9.0"/>
+    <title>STUN协议详解</title>
+<meta name="description" content="NAT会话遍历实用程序(STUN)是一种服务于作为其他协议处理NAT穿透的工具 | 可以使用它来确定分配的IP地址和端口并通过NAT访问它 | 它还可以用于检查两个端点之间的连通性 | STUN与许多现有的NAT一起工作 | 并作为保持NAT绑定活动的协议.
+">
+<meta property="og:type" content="website">
+<meta property="og:title" content="STUN协议详解">
+<meta property="og:description" content="NAT会话遍历实用程序(STUN)是一种服务于作为其他协议处理NAT穿透的工具 | 可以使用它来确定分配的IP地址和端口并通过NAT访问它 | 它还可以用于检查两个端点之间的连通性 | STUN与许多现有的NAT一起工作 | 并作为保持NAT绑定活动的协议.
+">
+<meta name="twitter:title" content="STUN协议详解">
+<meta name="twitter:description" content="NAT会话遍历实用程序(STUN)是一种服务于作为其他协议处理NAT穿透的工具 | 可以使用它来确定分配的IP地址和端口并通过NAT访问它 | 它还可以用于检查两个端点之间的连通性 | STUN与许多现有的NAT一起工作 | 并作为保持NAT绑定活动的协议.
+">
+<meta property="og:url" content="https://mycrl.github.io/Mycrl/p2p/stun_proto">
+<meta property="twitter:url" content="https://mycrl.github.io/Mycrl/p2p/stun_proto">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://mycrl.github.io/Mycrlhttps://cdn.pixabay.com/photo/2018/12/02/10/07/web-3850917_1280.jpg">
+<meta name="twitter:image" content="https://mycrl.github.io/Mycrlhttps://cdn.pixabay.com/photo/2018/12/02/10/07/web-3850917_1280.jpg">
+<link rel="icon" type="image/png" href="/favicon.ico">
+    <link rel="stylesheet" href="https://mycrl.github.io/Mycrl/static/theme.css"><link rel="stylesheet" href="https://mycrl.github.io/Mycrl/static/zine.css">
+    <link rel="alternate" type="application/atom+xml" title="Mr.Panda RSS" href="/feed.xml">
+    <style>
+    :root {
+        --primary-color: #2563eb;
+        --main-color: #ffffff;
+        --link-color: #2563eb;
+        --secondary-color: #eff3f7;
+    }
+    </style>
+</head>
+
+<body class="h-full bg-secondary">
+    <div class="zine-header bg-primary text-main font-bold text-center z-0" style="background-image: url('https://mycrl.github.io/Mycrl/static/background.jpg')">
+    <header class="p-8 md:p-10">
+            <div class="zine-brand text-4xl lg:text-5xl">
+                <a href="https://mycrl.github.io/Mycrl/">Mr.Panda</a>
+            </div>
+            <ul class="zine-menu">
+                </ul>
+        </header>
+        <div class="zine-space w-full h-32 md:h-36 lg:h-44 xl:h-48 2xl:h-56"></div>
+    </div>
+    <main
+        class="pb-10 -translate-y-32 lg:-translate-y-36 xl:-translate-y-44 2xl:-translate-y-56 mx-auto sm:max-w-scree-md md:max-w-screen-lg">
+        <div class="px-4 pb-10 md:px-8 md:pb-14 mx-4 my-6 bg-white shadow-xl shadow-slate-700/10 ring-1 ring-gray-900/5">
+    <div
+        class="sticky z-10 py-4 top-32 lg:top-36 xl:top-44 2xl:top-56 bg-white border-dashed border-b border-slate-300">
+        <div class="ml-1 md:ml-2 flex justify-between items-center">
+            <div class="zine-breadcrumb">
+                <a class="zine-diamond before:block before:absolute before:-inset-1 before:-skew-x-6 before:bg-primary relative inline-block transition sm:hover:scale-110 duration-500" href="https://mycrl.github.io/Mycrl/p2p">
+                    <div class="relative text-main px-4">P2P</div>
+                </a>
+                <span class="ml-2 text-gray-700">/ 第 ⁨1⁩ 篇</span>
+            </div>
+            <div>
+                <div class="flex items-center">
+                    <div id="toc-menu" class="ml-1 md:ml-2 p-2 cursor-pointer rounded hover:bg-gray-200">
+                       <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true">
+                            <path fill-rule="evenodd"
+                                d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    </div>
+                <div id="toc-list"
+                    class="absolute hidden right-0 flex flex-col max-w-screen-sm max-h-96 w-60 py-2 my-4 border bg-white rounded z-[99999] shadow-xl">
+                    <div class="px-2 overflow-y-auto">
+                        <a href="#stun消息头">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">STUN消息头</div>
+                            </a>
+                        <a href="#消息类型">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">消息类型</div>
+                            </a>
+                        <a href="#交易号">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">交易号</div>
+                            </a>
+                        <a href="#stun消息属性">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">STUN消息属性</div>
+                            </a>
+                        <a href="#属性类型">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">属性类型</div>
+                            </a>
+                        <a href="#username">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">UserName</div>
+                            </a>
+                        <a href="#date">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Date</div>
+                            </a>
+                        <a href="#realm">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Realm</div>
+                            </a>
+                        <a href="#nonce">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Nonce</div>
+                            </a>
+                        <a href="#software">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Software</div>
+                            </a>
+                        <a href="#messageintegrity">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">MessageIntegrity</div>
+                            </a>
+                        <a href="#xorpeeraddress">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">XorPeerAddress</div>
+                            </a>
+                        <a href="#xorrelayedaddress">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">XorRelayedAddress</div>
+                            </a>
+                        <a href="#xormappedaddress">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">XorMappedAddress</div>
+                            </a>
+                        <a href="#mappedaddress">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">MappedAddress</div>
+                            </a>
+                        <a href="#responseorigin">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">ResponseOrigin</div>
+                            </a>
+                        <a href="#errorcode">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">ErrorCode</div>
+                            </a>
+                        <a href="#lifetime">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Lifetime</div>
+                            </a>
+                        <a href="#reqeestedtransport">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">ReqeestedTransport</div>
+                            </a>
+                        <a href="#fingerprint">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">Fingerprint</div>
+                            </a>
+                        <a href="#channelnumber">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">ChannelNumber</div>
+                            </a>
+                        <a href="##address">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">#Address</div>
+                            </a>
+                        <a href="##xor-address">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-4 text-gray-700 text-sm">#XOR Address</div>
+                            </a>
+                        <a href="#实现">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">实现</div>
+                            </a>
+                        </div>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div class="pt-10">
+        <div class="prose mx-auto">
+            <div class="zine-article-title text-2xl md:text-4xl font-extrabold leading-tight mb-8 text-center">
+                STUN协议详解
+            </div>
+            <div class="flex items-center justify-between text-gray-500">
+                <span>2022-12-30</span>
+                <div class="flex items-center">
+    <a class="inline-flex items-center px-2 py-1 !text-gray-500 rounded hover:bg-gray-200 hover:!no-underline" href="https://mycrl.github.io/Mycrl/@panda">
+        <img class="!m-0 !p-1 w-7 h-7 rounded-full object-cover" src="https://avatars.githubusercontent.com/u/24816571?v=4" alt="avatar" loading="lazy">
+        <span>
+            Mr.Panda
+            </span>
+    </a>
+    </div>
+
+            </div>
+            <div class="zine-topic bg-secondary my-2 py-2 px-2 text-center">
+                
+                    <a class="p-2 !text-main" href="https://mycrl.github.io/Mycrl/topic/p2p">#p2p</a>
+                
+            </div>
+            </div>
+        <article class="prose mx-auto my-12">
+            <blockquote>
+<p><code>NAT会话遍历实用程序(STUN)</code>是一种服务于作为其他协议处理<code>NAT</code>穿透的工具 | 可以使用它来确定分配的<code>IP</code>地址和端口并通过<code>NAT</code>访问它 | 它还可以用于检查两个端点之间的连通性 | <code>STUN</code>与许多现有的<code>NAT</code>一起工作 | 并作为保持<code>NAT</code>绑定活动的协议.<br />
+<code>STUN</code>本身并不是一个<code>NAT</code>穿越解决方案 | 而是作为一种工具在<code>NAT</code>穿透解决方案的上下文中使用.</p>
+</blockquote>
+<p><code>STUN</code>协议可以使用<code>TCP</code>或者<code>UDP</code>传输，但一般情况下使用<code>UDP</code> | 一个完整的<code>STUN</code>消息由一个消息头和多个属性组成.</p>
+<div class="url-preview">
+ <div>RFC 8489: Session Traversal Utilities for NAT (STUN)</div>
+ <div></div>
+ <a href="https://www.rfc-editor.org/rfc/rfc8489">https://www.rfc-editor.org/rfc/rfc8489</a>
+</div>
+<hr />
+<h3 id="stun消息头" class="toc-item flex items-center group scroll-mt-20">
+    STUN消息头
+    <a href="#stun消息头" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">            0                   1                   2                   3
+</span><span style="color:#bfbab0;">            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |0 0|     STUN Message Type     |         Message Length        |
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |                         Magic Cookie                          |
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |                                                               |
+</span><span style="color:#bfbab0;">           |                     Transaction ID (96 bits)                  |
+</span><span style="color:#bfbab0;">           |                                                               |
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<table><thead><tr><th>字段</th><th>长度</th><th>说明</th></tr></thead><tbody>
+<tr><td>type</td><td>2</td><td>消息类型</td></tr>
+<tr><td>len</td><td>2</td><td>消息长度</td></tr>
+<tr><td>cookie</td><td>4</td><td>固定值: <code>0x2112A442u32</code></td></tr>
+<tr><td>transaction id</td><td>12</td><td>交易号</td></tr>
+</tbody></table>
+<h4 id="消息类型" class="toc-item flex items-center group scroll-mt-20">
+    消息类型
+    <a href="#消息类型" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4><table><thead><tr><th>类型</th><th>值</th></tr></thead><tbody>
+<tr><td>BindingRequest</td><td><code>0x0001</code></td></tr>
+<tr><td>BindingResponse</td><td><code>0x0101</code></td></tr>
+<tr><td>BindingError</td><td><code>0x0111</code></td></tr>
+<tr><td>AllocateRequest</td><td><code>0x0003</code></td></tr>
+<tr><td>AllocateResponse</td><td><code>0x0103</code></td></tr>
+<tr><td>AllocateError</td><td><code>0x0113</code></td></tr>
+<tr><td>CreatePermissionRequest</td><td><code>0x0008</code></td></tr>
+<tr><td>CreatePermissionResponse</td><td><code>0x0108</code></td></tr>
+<tr><td>CreatePermissionError</td><td><code>0x0118</code></td></tr>
+<tr><td>ChannelBindRequest</td><td><code>0x0009</code></td></tr>
+<tr><td>ChannelBindResponse</td><td><code>0x0109</code></td></tr>
+<tr><td>ChannelBindError</td><td><code>0x0119</code></td></tr>
+<tr><td>RefreshRequest</td><td><code>0x0004</code></td></tr>
+<tr><td>RefreshResponse</td><td><code>0x0104</code></td></tr>
+<tr><td>RefreshError</td><td><code>0x0114</code></td></tr>
+<tr><td>SendIndication</td><td><code>0x0016</code></td></tr>
+<tr><td>DataIndication</td><td><code>0x0017</code></td></tr>
+</tbody></table>
+<h4 id="交易号" class="toc-item flex items-center group scroll-mt-20">
+    交易号
+    <a href="#交易号" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<p><code>STUN</code>消息中的交易号是客户端生成的随机数据，服务端返回<code>STUN</code>响应的时候需要关联请求交易号.</p>
+<hr />
+<h3 id="stun消息属性" class="toc-item flex items-center group scroll-mt-20">
+    STUN消息属性
+    <a href="#stun消息属性" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">            0                   1                   2                   3
+</span><span style="color:#bfbab0;">            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |         Type                  |            Length             |
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |                         Value (variable)                ....
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<table><thead><tr><th>字段</th><th>长度</th><th>说明</th></tr></thead><tbody>
+<tr><td>type</td><td>2</td><td>属性类型</td></tr>
+<tr><td>len</td><td>2</td><td>内容长度</td></tr>
+<tr><td>value</td><td></td><td>属性内容</td></tr>
+</tbody></table>
+<blockquote>
+<p>属性内容为了对齐会存在填充位，长度为<code>4</code>的倍数，如果不足则填充<code>0</code>，如：内容长度为<code>5</code>，则<code>len</code>为<code>5</code>，但<code>value</code>的长度为<code>8</code> | 填充<code>3</code>个<code>0</code> | 读取<code>value</code>的时候需要排除掉填充位.</p>
+</blockquote>
+<h4 id="属性类型" class="toc-item flex items-center group scroll-mt-20">
+    属性类型
+    <a href="#属性类型" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4><table><thead><tr><th>类型</th><th>值</th></tr></thead><tbody>
+<tr><td>UserName</td><td><code>0x0006</code></td></tr>
+<tr><td>Data</td><td><code>0x0013</code></td></tr>
+<tr><td>Realm</td><td><code>0x0014</code></td></tr>
+<tr><td>Nonce</td><td><code>0x0015</code></td></tr>
+<tr><td>XorPeerAddress</td><td><code>0x0012</code></td></tr>
+<tr><td>XorRelayedAddress</td><td><code>0x0016</code></td></tr>
+<tr><td>XorMappedAddress</td><td><code>0x0020</code></td></tr>
+<tr><td>MappedAddress</td><td><code>0x0001</code></td></tr>
+<tr><td>ResponseOrigin</td><td><code>0x802B</code></td></tr>
+<tr><td>Software</td><td><code>0x8022</code></td></tr>
+<tr><td>MessageIntegrity</td><td><code>0x0008</code></td></tr>
+<tr><td>ErrorCode</td><td><code>0x0009</code></td></tr>
+<tr><td>Lifetime</td><td><code>0x000D</code></td></tr>
+<tr><td>ReqeestedTransport</td><td><code>0x0019</code></td></tr>
+<tr><td>Fingerprint</td><td><code>0x8028</code></td></tr>
+<tr><td>ChannelNumber</td><td><code>0x000C</code></td></tr>
+<tr><td>IceControlled</td><td><code>0x8029</code></td></tr>
+<tr><td>Priority</td><td><code>0x0024</code></td></tr>
+<tr><td>UseCandidate</td><td><code>0x0025</code></td></tr>
+<tr><td>IceControlling</td><td><code>0x802A</code></td></tr>
+</tbody></table>
+<h4 id="username" class="toc-item flex items-center group scroll-mt-20">
+    UserName
+    <a href="#username" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>这个属性在确保消息一致性时使用，这个属性包含一个可变长度的字符串，字符串编码必须为<code>UTF-8</code>，对于最大长度有限制，最大长度为<code>508</code>.</p>
+</blockquote>
+<h4 id="date" class="toc-item flex items-center group scroll-mt-20">
+    Date
+    <a href="#date" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>在<code>DataIndication</code>消息中使用，这个属性的值是可变长度的.</p>
+</blockquote>
+<h4 id="realm" class="toc-item flex items-center group scroll-mt-20">
+    Realm
+    <a href="#realm" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>可以出现在请求或者响应中，但一般在确保消息一致性的时候使用，字符串编码必须为<code>UTF-8</code>，最大长度为<code>127</code>.</p>
+</blockquote>
+<h4 id="nonce" class="toc-item flex items-center group scroll-mt-20">
+    Nonce
+    <a href="#nonce" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>一段随机字符串，可以出现在请求或者响应中，字符串编码必须为<code>UTF-8</code>，最大长度为<code>127</code>，对于一个对端<code>Nonce</code>值是唯一并且持久的，这里可以理解为对端的标识，<code>Nonce</code>存在过期时间，过期之后需要重新刷新随机字符串，默认过期时间为<code>3600</code>秒.</p>
+</blockquote>
+<h4 id="software" class="toc-item flex items-center group scroll-mt-20">
+    Software
+    <a href="#software" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>包含自身程序的文本描述，这个值对于协议没有任何影响，一般情况下包含制造商和版本，用于参考信息.</p>
+</blockquote>
+<h4 id="messageintegrity" class="toc-item flex items-center group scroll-mt-20">
+    MessageIntegrity
+    <a href="#messageintegrity" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>消息完整性检查使用，包含一个<code>HMAC-SHA1</code>值，对于短期凭证和长期凭证有不同的计算方法.<br />
+这里以长期认证举例: <code>HMAC-SHA1(username + password + realm)</code></p>
+</blockquote>
+<h4 id="xorpeeraddress" class="toc-item flex items-center group scroll-mt-20">
+    XorPeerAddress
+    <a href="#xorpeeraddress" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>指定对等方的地址和端口. <code>(XOR)</code></p>
+</blockquote>
+<h4 id="xorrelayedaddress" class="toc-item flex items-center group scroll-mt-20">
+    XorRelayedAddress
+    <a href="#xorrelayedaddress" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>服务器分配的地址和端口. <code>(XOR)</code></p>
+</blockquote>
+<h4 id="xormappedaddress" class="toc-item flex items-center group scroll-mt-20">
+    XorMappedAddress
+    <a href="#xormappedaddress" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>与<code>MappedAddress</code>相同. <code>(XOR)</code></p>
+</blockquote>
+<h4 id="mappedaddress" class="toc-item flex items-center group scroll-mt-20">
+    MappedAddress
+    <a href="#mappedaddress" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>客户端的自反地址. <code>(客户端NAT最外层地址)</code></p>
+</blockquote>
+<h4 id="responseorigin" class="toc-item flex items-center group scroll-mt-20">
+    ResponseOrigin
+    <a href="#responseorigin" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>服务器的对外地址. <code>(用来处理双重NAT)</code></p>
+</blockquote>
+<h4 id="errorcode" class="toc-item flex items-center group scroll-mt-20">
+    ErrorCode
+    <a href="#errorcode" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>用于错误消息响应.</p>
+</blockquote>
+<pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">           0                   1                   2                   3
+</span><span style="color:#bfbab0;">           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |           Reserved, should be 0         |Class|     Number    |
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |      Reason Phrase (variable)                                ..
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<table><thead><tr><th>字段</th><th>长度</th><th>说明</th></tr></thead><tbody>
+<tr><td>code</td><td>2</td><td>错误代码</td></tr>
+<tr><td>message</td><td></td><td>错误消息</td></tr>
+</tbody></table>
+<table><thead><tr><th>错误码</th><th>值</th></tr></thead><tbody>
+<tr><td>TryAlternate</td><td><code>0x0300</code></td></tr>
+<tr><td>BadRequest</td><td><code>0x0400</code></td></tr>
+<tr><td>Unauthorized</td><td><code>0x0401</code></td></tr>
+<tr><td>Forbidden</td><td><code>0x0403</code></td></tr>
+<tr><td>RequestTimedout</td><td><code>0x0408</code></td></tr>
+<tr><td>UnknownAttribute</td><td><code>0x0414</code></td></tr>
+<tr><td>AllocationMismatch</td><td><code>0x0425</code></td></tr>
+<tr><td>StaleNonce</td><td><code>0x0426</code></td></tr>
+<tr><td>AddressFamilyNotSupported</td><td><code>0x0428</code></td></tr>
+<tr><td>WrongCredentials</td><td><code>0x0429</code></td></tr>
+<tr><td>UnsupportedTransportAddress</td><td><code>0x042A</code></td></tr>
+<tr><td>AllocationQuotaReached</td><td><code>0x0456</code></td></tr>
+<tr><td>ServerError</td><td><code>0x0500</code></td></tr>
+<tr><td>InsufficientCapacity</td><td><code>0x0508</code></td></tr>
+</tbody></table>
+<h4 id="lifetime" class="toc-item flex items-center group scroll-mt-20">
+    Lifetime
+    <a href="#lifetime" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>用于指示和刷新生命周期.</p>
+</blockquote>
+<h4 id="reqeestedtransport" class="toc-item flex items-center group scroll-mt-20">
+    ReqeestedTransport
+    <a href="#reqeestedtransport" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>客户端请求使用的传输协议.</p>
+</blockquote>
+<pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">           0                   1                   2                   3
+</span><span style="color:#bfbab0;">           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |    Protocol   |                    RFFU                       |
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<table><thead><tr><th>协议</th><th>值</th></tr></thead><tbody>
+<tr><td>UDP</td><td>0x01</td></tr>
+<tr><td>TCP</td><td>0x02</td></tr>
+</tbody></table>
+<h4 id="fingerprint" class="toc-item flex items-center group scroll-mt-20">
+    Fingerprint
+    <a href="#fingerprint" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p><code>STUN</code>消息摘要，这个属性必须是属性列表的最后一个属性，通过对整个消息经常<code>CRC</code>计算得到.</p>
+</blockquote>
+<div class="callout" style="background-color: #dee0e399; border-color: #dee0e3">
+ <div><p>在计算<code>Fingerprint</code>之前，STUN消息的长度字段必须包含<code>Fingerprint</code>属性的长度，但并不用真正包含<code>Fingerprint</code>字段.</p>
+</div>
+</div>
+<h4 id="channelnumber" class="toc-item flex items-center group scroll-mt-20">
+    ChannelNumber
+    <a href="#channelnumber" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>在绑定和发送<code>channel</code>消息时使用，内部包含一个通道号，这个属性的长度是<code>4</code>个字节.</p>
+</blockquote>
+<pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">           0                   1                   2                   3
+</span><span style="color:#bfbab0;">           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |        Channel Number         |         RFFU = 0              |
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<hr />
+<h4 id="#address" class="toc-item flex items-center group scroll-mt-20">
+    #Address
+    <a href="##address" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4><pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">           0                   1                   2                   3
+</span><span style="color:#bfbab0;">           0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |0 0 0 0 0 0 0 0|    Family     |           Port                |
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">          |                                                               |
+</span><span style="color:#bfbab0;">          |                 Address (32 bits or 128 bits)                 |
+</span><span style="color:#bfbab0;">          |                                                               |
+</span><span style="color:#bfbab0;">          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<table><thead><tr><th>字段</th><th>长度</th><th>说明</th></tr></thead><tbody>
+<tr><td>family</td><td>2</td><td>ip family</td></tr>
+<tr><td>port</td><td>2</td><td>端口</td></tr>
+<tr><td>address</td><td>4 / 16</td><td>地址</td></tr>
+</tbody></table>
+<table><thead><tr><th>IP Family</th><th>值</th></tr></thead><tbody>
+<tr><td>IPv4</td><td>0x01</td></tr>
+<tr><td>IPv6</td><td>0x02</td></tr>
+</tbody></table>
+<h4 id="#xor-address" class="toc-item flex items-center group scroll-mt-20">
+    #XOR Address
+    <a href="##xor-address" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4><pre style="background-color:#0f1419;">
+<span style="color:#bfbab0;">            0                   1                   2                   3
+</span><span style="color:#bfbab0;">            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |0 0 0 0 0 0 0 0|    Family     |         X-Port                |
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span style="color:#bfbab0;">           |                X-Address (Variable)
+</span><span style="color:#bfbab0;">           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></pre>
+<div class="callout" style="background-color: #dee0e399; border-color: #dee0e3">
+ <div><p><code>Family</code>字段代表IP地址族，其编码与<code>MAPPED-ADDRESS</code>中的<code>Family</code>字段相同.</p>
+<p><code>X-Port</code>是通过对映射端口与<code>magic cookie</code>的最高<code>16</code>位进行异或计算得出的，如果是<code>IPv4</code>，则<code>X-Address</code>是通过对映射的<code>IP</code>地址与<code>magic cookie</code>进行异或计算得出的，如果<code>IP</code>是<code>IPv6</code>，则<code>X-Address</code>是通过对映射的<code>IP</code>地址与<code>magic cookie</code>和<code>96</code>位<code>transaction id</code>串联进行异或运算来计算的，在所有情况下，<code>XOR</code>操作都以网络字节顺序（即它们将在消息中编码的顺序）对其输入进行操作.</p>
+<p>编码和处理属性值前<code>8</code>位的规则、处理属性多次出现的规则、处理地址族的规则与<code>MAPPED-ADDRESS</code>相同.</p>
+</div>
+</div>
+<hr />
+<h3 id="实现" class="toc-item flex items-center group scroll-mt-20">
+    实现
+    <a href="#实现" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h3><div class="url-preview">
+ <div>GitHub - colourful-rtc/turn-rs: A pure rust-implemented turn server.</div>
+ <div>A pure rust-implemented turn server. Contribute to colourful-rtc/turn-rs development by creating an account on GitHub.</div>
+ <a href="https://github.com/colourful-rtc/turn-rs">https://github.com/colourful-rtc/turn-rs</a>
+ <img src="https://opengraph.githubassets.com/23199effd402427f7f666c945da1a5d231b3e93c1a5221fcf251328fe7b4175a/colourful-rtc/turn-rs" />
+</div>
+<p>这是一个纯<code>Rust</code>实现的<code>STUN/TURN</code>服务器，内部包含<code>STUN</code>消息编解码器和<code>TURN</code>会话处理库.</p>
+
+        </article>
+        </div>
+</div>
+<div
+    class="inline-link-card absolute hidden border rounded bg-white shadow-xl mx-2 w-96 transition ease-in-out sm:hover:scale-105 duration-500">
+    <a class="inline-link-url">
+        <div class="">
+            <img class="inline-link-image w-full h-52 object-cover rounded-t">
+            <div class="inline-link-title font-bold p-4 line-clamp-2"></div>
+        </div>
+    </a>
+</div>
+<div class="mx-4">
+    <div class="giscus"></div>
+</div>
+<script
+    src="https://giscus.app/client.js"
+    data-repo="mycrl/Mycrl"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkyODE2MTQwNDc="
+    data-category="General"
+    data-category-id="DIC_kwDOEMkW384CTTQs"
+    data-mapping="title"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script></main>
+    <footer class="relative">
+        <div class="footer">
+    <a href="https://github.com/mycrl">
+        <svg aria-hidden="true" height="13" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true">
+            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        @Mr.Panda
+    </a>
+</div>
+
+<div id="toped" class="hover">
+    <svg t="1672262360002" viewBox="0 0 1024 1024" p-id="4198" width="40" height="40">
+        <path d="M661.419 853.333A278.315 278.315 0 0 1 512 1002.752a278.315 278.315 0 0 1-149.419-149.419h96.427A191.76 191.76 0 0 0 512 906.368c21.12-14.08 39.083-32.17 53.035-53.035h96.384zM768 631.68l85.333 96.768v82.219H170.667v-82.219L256 631.68V384c0-148.608 106.837-275.072 256-321.92C661.163 108.928 768 235.392 768 384v247.68z m-31.147 93.653l-54.186-61.44V384c0-98.901-66.987-189.013-170.667-231.253C408.32 194.987 341.333 285.056 341.333 384v279.893l-54.186 61.44h449.706zM512 469.333a85.333 85.333 0 1 1 0-170.666 85.333 85.333 0 0 1 0 170.666z" fill="#d4237a" p-id="4199"></path>
+    </svg>
+</div>
+
+<script>
+    document.getElementById('toped')
+        .addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        })
+</script><a href="https://github.com/zineland"
+            class="absolute z-20 bottom-0 w-full text-center font-bold md:text-slate-100 md:opacity-10 md:hover:opacity-50 md:bg-transparent bg-primary p-2 text-main">
+            Proudly powered by Zine.
+        </a>
+    </footer>
+</body>
+<script src="https://mycrl.github.io/Mycrl/static/medium-zoom.min.js"></script>
+<script src="https://mycrl.github.io/Mycrl/static/zine.js"></script>
+</html>

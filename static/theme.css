@@ -1,12 +1,16 @@
-.prose blockquote code {
+pre > span {
+    font-size: 12px;
+}
+
+.prose code {
     background-color: rgba(0, 0, 0, 0.07);
     padding: 0 3px;
     border-radius: 2px;
 }
 
-.prose  blockquote code:after, 
-.prose blockquote code:before {
-    content: "";
+.prose code:after, 
+.prose code:before {
+    content: "" !important;
 }
 
 .zine-topic .\!text-main {
@@ -17,6 +21,8 @@
 .zine-header {
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: 50%;
+    background-color: rgba(0, 0, 0, 0) !important;
 }
 
 .footer {
@@ -44,4 +50,56 @@
     color: #999;
     opacity: 1;
     font-weight: normal;
+}
+
+.zine-cover img {
+    height: 200px;
+}
+
+.zine-card-date {
+    font-size: 12px !important;
+    color: #999 !important;
+    line-height: 0 !important;
+}
+
+#toped {
+    position: fixed;
+    bottom: 40px;
+    right: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.3);
+    transition: 0.3s;
+}
+
+#toped:hover {
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5);
+}
+
+button, .hover {
+    cursor: pointer;
+    outline: none;
+    -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 2.5px;
+}
+
+::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+}
+
+::-webkit-scrollbar-button:hover {
+    background: #999;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2.5px;
+    background: #0c9cf8;
 }

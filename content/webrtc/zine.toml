@@ -1,12 +1,21 @@
-number = 1
-slug = "WebRTC"
+number = 2
 title = "WebRTC"
 
 [[article]]
-file = "README.md"
+file = "build_gn.md"
 title = "WebRTC Build.GN"
-author = "Mr.Panda"
-cover = "https://discourse.itk.org/uploads/default/original/1X/badb74a44c658fa383fee19617d03e59d40d1b73.png"
+author = "panda"
+cover = "https://cdn.pixabay.com/photo/2016/11/19/14/00/code-1839406_1280.jpg"
+pub_date = "2022-12-29"
+publish = true
+featured = true
+topic = ["webrtc"]
+
+[[article]]
+file = "customer_video_source.md"
+title = "WebRTC自定义视频源"
+author = "panda"
+cover = "https://ik.imagekit.io/ably/ghost/prod/2022/03/what-is-web-rtc@2x-1.png?tr=w-1728,q-50"
 pub_date = "2022-12-29"
 publish = true
 featured = true

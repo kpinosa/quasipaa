@@ -4,8 +4,13 @@ name = "Mr.Panda"
 description = ""
 locale = "zh"
 
-[authors]
-zine_team = { name = "Mr.Panda" }
+[authors.panda]
+name = "Mr.Panda"
+avatar = "https://avatars.githubusercontent.com/u/24816571?v=4"
+editor = true
+bio = """
+> "我要在这白鹿原上刮起一场风搅雪"
+"""
 
 [theme]
 head_template = "templates/head.html"
@@ -13,6 +18,14 @@ background_image = "/static/background.jpg"
 footer_template = "templates/footer.html"
 article_extend_template = "templates/article_extend.html"
 
+[markdown]
+highlight_code = true
+highlight_theme = "ayu-dark"
+
 [topics.webrtc]
 name = "WebRTC"
 description = "With WebRTC, you can add real-time communication capabilities to your application that works on top of an open standard. It supports video, voice, and generic data to be sent between peers, allowing developers to build powerful voice- and video-communication solutions."
+
+[topics.p2p]
+name = "P2P"
+description = "Peer-to-peer (P2P) is a decentralized communications model in which each party has the same capabilities and either party can initiate a communication session."

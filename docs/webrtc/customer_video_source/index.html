@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="zine-version" content="0.9.0"/>
+    <title>WebRTC自定义视频源</title>
+<meta name="description" content="通过自定义视频源，我们可以输入视频帧到WebRTC MediaStreamTrack中，这样可以将自定义的视频源发送到对端.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="WebRTC自定义视频源">
+<meta property="og:description" content="通过自定义视频源，我们可以输入视频帧到WebRTC MediaStreamTrack中，这样可以将自定义的视频源发送到对端.">
+<meta name="twitter:title" content="WebRTC自定义视频源">
+<meta name="twitter:description" content="通过自定义视频源，我们可以输入视频帧到WebRTC MediaStreamTrack中，这样可以将自定义的视频源发送到对端.">
+<meta property="og:url" content="https://mycrl.github.io/Mycrl/webrtc/customer_video_source">
+<meta property="twitter:url" content="https://mycrl.github.io/Mycrl/webrtc/customer_video_source">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://mycrl.github.io/Mycrlhttps://ik.imagekit.io/ably/ghost/prod/2022/03/what-is-web-rtc@2x-1.png?tr=w-1728,q-50">
+<meta name="twitter:image" content="https://mycrl.github.io/Mycrlhttps://ik.imagekit.io/ably/ghost/prod/2022/03/what-is-web-rtc@2x-1.png?tr=w-1728,q-50">
+<link rel="icon" type="image/png" href="/favicon.ico">
+    <link rel="stylesheet" href="https://mycrl.github.io/Mycrl/static/theme.css"><link rel="stylesheet" href="https://mycrl.github.io/Mycrl/static/zine.css">
+    <link rel="alternate" type="application/atom+xml" title="Mr.Panda RSS" href="/feed.xml">
+    <style>
+    :root {
+        --primary-color: #2563eb;
+        --main-color: #ffffff;
+        --link-color: #2563eb;
+        --secondary-color: #eff3f7;
+    }
+    </style>
+</head>
+
+<body class="h-full bg-secondary">
+    <div class="zine-header bg-primary text-main font-bold text-center z-0" style="background-image: url('https://mycrl.github.io/Mycrl/static/background.jpg')">
+    <header class="p-8 md:p-10">
+            <div class="zine-brand text-4xl lg:text-5xl">
+                <a href="https://mycrl.github.io/Mycrl/">Mr.Panda</a>
+            </div>
+            <ul class="zine-menu">
+                </ul>
+        </header>
+        <div class="zine-space w-full h-32 md:h-36 lg:h-44 xl:h-48 2xl:h-56"></div>
+    </div>
+    <main
+        class="pb-10 -translate-y-32 lg:-translate-y-36 xl:-translate-y-44 2xl:-translate-y-56 mx-auto sm:max-w-scree-md md:max-w-screen-lg">
+        <div class="px-4 pb-10 md:px-8 md:pb-14 mx-4 my-6 bg-white shadow-xl shadow-slate-700/10 ring-1 ring-gray-900/5">
+    <div
+        class="sticky z-10 py-4 top-32 lg:top-36 xl:top-44 2xl:top-56 bg-white border-dashed border-b border-slate-300">
+        <div class="ml-1 md:ml-2 flex justify-between items-center">
+            <div class="zine-breadcrumb">
+                <a class="zine-diamond before:block before:absolute before:-inset-1 before:-skew-x-6 before:bg-primary relative inline-block transition sm:hover:scale-110 duration-500" href="https://mycrl.github.io/Mycrl/webrtc">
+                    <div class="relative text-main px-4">WebRTC</div>
+                </a>
+                <span class="ml-2 text-gray-700">/ 第 ⁨2⁩ 篇</span>
+            </div>
+            <div>
+                <div class="flex items-center">
+                    <div id="toc-menu" class="ml-1 md:ml-2 p-2 cursor-pointer rounded hover:bg-gray-200">
+                       <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                            data-view-component="true">
+                            <path fill-rule="evenodd"
+                                d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    </div>
+                <div id="toc-list"
+                    class="absolute hidden right-0 flex flex-col max-w-screen-sm max-h-96 w-60 py-2 my-4 border bg-white rounded z-[99999] shadow-xl">
+                    <div class="px-2 overflow-y-auto">
+                        <a href="#videosourceinterface:">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">VideoSourceInterface:</div>
+                            </a>
+                        <a href="#videotracksource">
+                            <div class="py-1 my-1 rounded hover:bg-gray-100 pl-2 text-gray-800 font-bold text-sm">VideoTrackSource</div>
+                            </a>
+                        </div>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div class="pt-10">
+        <div class="prose mx-auto">
+            <div class="zine-article-title text-2xl md:text-4xl font-extrabold leading-tight mb-8 text-center">
+                WebRTC自定义视频源
+            </div>
+            <div class="flex items-center justify-between text-gray-500">
+                <span>2022-12-29</span>
+                <div class="flex items-center">
+    <a class="inline-flex items-center px-2 py-1 !text-gray-500 rounded hover:bg-gray-200 hover:!no-underline" href="https://mycrl.github.io/Mycrl/@panda">
+        <img class="!m-0 !p-1 w-7 h-7 rounded-full object-cover" src="https://avatars.githubusercontent.com/u/24816571?v=4" alt="avatar" loading="lazy">
+        <span>
+            Mr.Panda
+            </span>
+    </a>
+    </div>
+
+            </div>
+            <div class="zine-topic bg-secondary my-2 py-2 px-2 text-center">
+                
+                    <a class="p-2 !text-main" href="https://mycrl.github.io/Mycrl/topic/webrtc">#webrtc</a>
+                
+            </div>
+            </div>
+        <article class="prose mx-auto my-12">
+            <p>通过自定义视频源，我们可以输入视频帧到<code>WebRTC MediaStreamTrack</code>中，这样可以将自定义的视频源发送到对端.<br />
+要实现自定义视频源，需要实现的类就是<code>VideoSourceInterface</code>和<code>VideoTrackSource</code>.</p>
+<h4 id="videosourceinterface:" class="toc-item flex items-center group scroll-mt-20">
+    VideoSourceInterface:
+    <a href="#videosourceinterface:" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>主要需要实现的就是<code>AddOrUpdateSink</code>和<code>RemoveSink</code></p>
+</blockquote>
+<pre style="background-color:#0f1419;">
+<span style="color:#ff7733;">class </span><span style="color:#59c2ff;">VideoSourceInterface </span><span style="color:#bfbab0;">{
+</span><span style="color:#bfbab0;"> </span><span style="color:#ff7733;">public</span><span style="color:#bfbab0;">:
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">virtual </span><span style="color:#ffb454;">~VideoSourceInterface</span><span style="color:#bfbab0;">() </span><span style="color:#f29668;">= </span><span style="color:#ff7733;">default</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// `AddOrUpdateSink`在`WebRTC`向这个类中添加`VideoSink`的时候触发,
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// 添加之后你就可以通过它向内部推送视频帧.
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// 一个视频源可以有同时存在多个`VideoSink`.
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">virtual void </span><span style="color:#ffb454;">AddOrUpdateSink</span><span style="color:#bfbab0;">(VideoSinkInterface&lt;VideoFrameT&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0cc;">,
+</span><span style="color:#bfbab0;">                               </span><span style="color:#ff7733;">const</span><span style="color:#bfbab0;"> VideoSinkWants</span><span style="color:#f29668;">&amp; </span><span style="color:#f29718;">wants</span><span style="color:#bfbab0;">) </span><span style="color:#f29668;">= </span><span style="color:#f29718;">0</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// `RemoveSink`是需要删除`VideoSink`的时候调用.
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">virtual void </span><span style="color:#ffb454;">RemoveSink</span><span style="color:#bfbab0;">(VideoSinkInterface&lt;VideoFrameT&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0;">) </span><span style="color:#f29668;">= </span><span style="color:#f29718;">0</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">virtual void </span><span style="color:#ffb454;">RequestRefreshFrame</span><span style="color:#bfbab0;">() {}
+</span><span style="color:#bfbab0;">}</span><span style="color:#bfbab0cc;">;
+</span></pre>
+<div class="url-preview">
+ <div>batrachiatc/media_stream_track.h at master · colourful-rtc/batrachiatc · GitHub</div>
+ <div>Google webrtc native export c abi. Contribute to colourful-rtc/batrachiatc development by creating an account on GitHub.</div>
+ <a href="https://github.com/colourful-rtc/batrachiatc/blob/master/src/media_stream_track.h#L35">https://github.com/colourful-rtc/batrachiatc/blob/master/src/media_stream_track.h#L35</a>
+ <img src="https://opengraph.githubassets.com/facb2dafdb5e25bab323f00653ba47793ca7b7066d7332eb21894f5a3cc09f72/colourful-rtc/batrachiatc" />
+</div>
+<h4 id="videotracksource" class="toc-item flex items-center group scroll-mt-20">
+    VideoTrackSource
+    <a href="#videotracksource" class="ml-2 inline-flex items-center opacity-0 border-0 group-hover:opacity-100"
+        aria-label="Anchor">
+        <div
+            class="w-6 h-6 text-slate-400 ring-1 ring-slate-900/5 rounded-md shadow-sm flex items-center justify-center hover:ring-slate-900/10 hover:shadow hover:text-slate-700">
+            <svg width="12" height="12" fill="none" aria-hidden="true">
+                <path d="M3.75 1v10M8.25 1v10M1 3.75h10M1 8.25h10" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                </path>
+            </svg>
+        </div>
+    </a>
+</h4>
+<blockquote>
+<p>不需要实现其中任何方法，直接继承即可，这个类的主要作用就是提供<code>VideoSource</code>的实现</p>
+</blockquote>
+<pre style="background-color:#0f1419;">
+<span style="color:#ff7733;">class </span><span style="color:#bfbab0;">RTC_EXPORT </span><span style="color:#59c2ff;">VideoTrackSource </span><span style="color:#bfbab0cc;">: </span><span style="color:#ff7733;">public </span><span style="text-decoration:underline;color:#59c2ff;">Notifier</span><span style="color:#bfbab0;">&lt;VideoTrackSourceInterface&gt; {
+</span><span style="color:#bfbab0;"> </span><span style="color:#ff7733;">public</span><span style="color:#bfbab0;">:
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">explicit </span><span style="color:#ffb454;">VideoTrackSource</span><span style="color:#bfbab0;">(</span><span style="color:#ff7733;">bool </span><span style="color:#f29718;">remote</span><span style="color:#bfbab0;">)</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">SetState</span><span style="color:#bfbab0;">(SourceState </span><span style="color:#f29718;">new_state</span><span style="color:#bfbab0;">)</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  SourceState </span><span style="color:#ffb454;">state</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">const override </span><span style="color:#bfbab0;">{ </span><span style="color:#ff7733;">return</span><span style="color:#bfbab0;"> state_</span><span style="color:#bfbab0cc;">; </span><span style="color:#bfbab0;">}
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// 视频源是否来自远端，如果是自己实现的，始终为`false`
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">bool </span><span style="color:#ffb454;">remote</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">const override </span><span style="color:#bfbab0;">{ </span><span style="color:#ff7733;">return</span><span style="color:#bfbab0;"> remote_</span><span style="color:#bfbab0cc;">; </span><span style="color:#bfbab0;">}
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// 视频源是否为桌面捕获，如果来自桌面，则覆盖实现返回`true`即可
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">bool </span><span style="color:#ffb454;">is_screencast</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">const override </span><span style="color:#bfbab0;">{ </span><span style="color:#ff7733;">return </span><span style="color:#f29718;">false</span><span style="color:#bfbab0cc;">; </span><span style="color:#bfbab0;">}
+</span><span style="color:#bfbab0;">  absl</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">optional&lt;</span><span style="color:#ff7733;">bool</span><span style="color:#bfbab0;">&gt; </span><span style="color:#ffb454;">needs_denoising</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">const override </span><span style="color:#bfbab0;">{
+</span><span style="color:#bfbab0;">    </span><span style="color:#ff7733;">return</span><span style="color:#bfbab0;"> absl</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">nullopt</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  }
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="font-style:italic;color:#5c6773;">// 获取源状态
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">bool </span><span style="color:#ffb454;">GetStats</span><span style="color:#bfbab0;">(Stats</span><span style="color:#f29668;">* </span><span style="color:#f29718;">stats</span><span style="color:#bfbab0;">) </span><span style="color:#ff7733;">override </span><span style="color:#bfbab0;">{ </span><span style="color:#ff7733;">return </span><span style="color:#f29718;">false</span><span style="color:#bfbab0cc;">; </span><span style="color:#bfbab0;">}
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">AddOrUpdateSink</span><span style="color:#bfbab0;">(rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSinkInterface&lt;VideoFrame&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0cc;">,
+</span><span style="color:#bfbab0;">                       </span><span style="color:#ff7733;">const</span><span style="color:#bfbab0;"> rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSinkWants</span><span style="color:#f29668;">&amp; </span><span style="color:#f29718;">wants</span><span style="color:#bfbab0;">) </span><span style="color:#ff7733;">override</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">RemoveSink</span><span style="color:#bfbab0;">(rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSinkInterface&lt;VideoFrame&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0;">) </span><span style="color:#ff7733;">override</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">bool </span><span style="color:#ffb454;">SupportsEncodedOutput</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">const override </span><span style="color:#bfbab0;">{ </span><span style="color:#ff7733;">return </span><span style="color:#f29718;">false</span><span style="color:#bfbab0cc;">; </span><span style="color:#bfbab0;">}
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">GenerateKeyFrame</span><span style="color:#bfbab0;">() </span><span style="color:#ff7733;">override </span><span style="color:#bfbab0;">{}
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">AddEncodedSink</span><span style="color:#bfbab0;">(
+</span><span style="color:#bfbab0;">      rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSinkInterface&lt;RecordableEncodedFrame&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0;">) </span><span style="color:#ff7733;">override </span><span style="color:#bfbab0;">{}
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">void </span><span style="color:#ffb454;">RemoveEncodedSink</span><span style="color:#bfbab0;">(
+</span><span style="color:#bfbab0;">      rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSinkInterface&lt;RecordableEncodedFrame&gt;</span><span style="color:#f29668;">* </span><span style="color:#f29718;">sink</span><span style="color:#bfbab0;">) </span><span style="color:#ff7733;">override </span><span style="color:#bfbab0;">{}
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;"> </span><span style="color:#ff7733;">protected</span><span style="color:#bfbab0;">:
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">virtual</span><span style="color:#bfbab0;"> rtc</span><span style="color:#f29668;">::</span><span style="color:#bfbab0;">VideoSourceInterface&lt;VideoFrame&gt;</span><span style="color:#f29668;">* </span><span style="color:#ffb454;">source</span><span style="color:#bfbab0;">() </span><span style="color:#f29668;">= </span><span style="color:#f29718;">0</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">
+</span><span style="color:#bfbab0;"> </span><span style="color:#ff7733;">private</span><span style="color:#bfbab0;">:
+</span><span style="color:#bfbab0;">  SequenceChecker worker_thread_checker_</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  SourceState state_</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">  </span><span style="color:#ff7733;">const bool</span><span style="color:#bfbab0;"> remote_</span><span style="color:#bfbab0cc;">;
+</span><span style="color:#bfbab0;">}</span><span style="color:#bfbab0cc;">;
+</span></pre>
+<div class="url-preview">
+ <div>batrachiatc/media_stream_track.h at master · colourful-rtc/batrachiatc · GitHub</div>
+ <div>Google webrtc native export c abi. Contribute to colourful-rtc/batrachiatc development by creating an account on GitHub.</div>
+ <a href="https://github.com/colourful-rtc/batrachiatc/blob/master/src/media_stream_track.h#L53">https://github.com/colourful-rtc/batrachiatc/blob/master/src/media_stream_track.h#L53</a>
+ <img src="https://opengraph.githubassets.com/facb2dafdb5e25bab323f00653ba47793ca7b7066d7332eb21894f5a3cc09f72/colourful-rtc/batrachiatc" />
+</div>
+
+        </article>
+        <div class="my-4 w-full border-dashed border-t border-slate-300"></div>
+        <div class="zine-navigate flex flex-col md:flex-row md:justify-between">
+            <a class="inline my-1 py-2 px-4 font-bold text-slate-700 hover:underline" href="https://mycrl.github.io/Mycrl/webrtc/build_gn">
+                上一篇：
+                WebRTC Build.GN
+            </a>
+            </div>
+        </div>
+</div>
+<div
+    class="inline-link-card absolute hidden border rounded bg-white shadow-xl mx-2 w-96 transition ease-in-out sm:hover:scale-105 duration-500">
+    <a class="inline-link-url">
+        <div class="">
+            <img class="inline-link-image w-full h-52 object-cover rounded-t">
+            <div class="inline-link-title font-bold p-4 line-clamp-2"></div>
+        </div>
+    </a>
+</div>
+<div class="mx-4">
+    <div class="giscus"></div>
+</div>
+<script
+    src="https://giscus.app/client.js"
+    data-repo="mycrl/Mycrl"
+    data-repo-id="MDEwOlJlcG9zaXRvcnkyODE2MTQwNDc="
+    data-category="General"
+    data-category-id="DIC_kwDOEMkW384CTTQs"
+    data-mapping="title"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script></main>
+    <footer class="relative">
+        <div class="footer">
+    <a href="https://github.com/mycrl">
+        <svg aria-hidden="true" height="13" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true">
+            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        @Mr.Panda
+    </a>
+</div>
+
+<div id="toped" class="hover">
+    <svg t="1672262360002" viewBox="0 0 1024 1024" p-id="4198" width="40" height="40">
+        <path d="M661.419 853.333A278.315 278.315 0 0 1 512 1002.752a278.315 278.315 0 0 1-149.419-149.419h96.427A191.76 191.76 0 0 0 512 906.368c21.12-14.08 39.083-32.17 53.035-53.035h96.384zM768 631.68l85.333 96.768v82.219H170.667v-82.219L256 631.68V384c0-148.608 106.837-275.072 256-321.92C661.163 108.928 768 235.392 768 384v247.68z m-31.147 93.653l-54.186-61.44V384c0-98.901-66.987-189.013-170.667-231.253C408.32 194.987 341.333 285.056 341.333 384v279.893l-54.186 61.44h449.706zM512 469.333a85.333 85.333 0 1 1 0-170.666 85.333 85.333 0 0 1 0 170.666z" fill="#d4237a" p-id="4199"></path>
+    </svg>
+</div>
+
+<script>
+    document.getElementById('toped')
+        .addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        })
+</script><a href="https://github.com/zineland"
+            class="absolute z-20 bottom-0 w-full text-center font-bold md:text-slate-100 md:opacity-10 md:hover:opacity-50 md:bg-transparent bg-primary p-2 text-main">
+            Proudly powered by Zine.
+        </a>
+    </footer>
+</body>
+<script src="https://mycrl.github.io/Mycrl/static/medium-zoom.min.js"></script>
+<script src="https://mycrl.github.io/Mycrl/static/zine.js"></script>
+</html>

@@ -103,3 +103,59 @@ button, .hover {
     border-radius: 2.5px;
     background: #0c9cf8;
 }
+
+.i-header * {
+    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.i-header {
+    background-color: #ffffffcc;
+    border-bottom: 1px solid #8882;
+    user-select: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    backdrop-filter: blur(32px);
+    transition: height 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+    text-align: left;
+}
+
+.i-header .inner {
+    display: flex;
+}
+
+.i-header .title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 3.5rem;
+    color: #333333;
+}
+
+.i-header .nav-items {
+    flex: 6 auto;
+    text-align: right;
+}
+
+.i-header .nav-item {
+    display: inline-block;
+    text-align: center;
+    flex: 1;
+    font-size: 16px;
+    line-height: 3.5rem;
+    padding: 0 16px;
+    transition: padding 0.2s, color 0.5s;
+    color: #666666;
+    font-weight: normal;
+}
+
+.i-header .nav-item img {
+    position: relative;
+    top: 0.5rem;
+}
+
+main .sticky {
+    top: 14.5rem;
+}

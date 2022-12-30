@@ -14,7 +14,6 @@ bio = """
 
 [theme]
 head_template = "templates/head.html"
-background_image = "/static/background.jpg"
 footer_template = "templates/footer.html"
 article_extend_template = "templates/article_extend.html"
 

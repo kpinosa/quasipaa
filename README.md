@@ -1,8 +1,15 @@
-![WebAssembly](https://badgen.net/badge/Language/WebAssembly/blue?icon=visualstudio&label)
-![JavaScript](https://badgen.net/badge/Language/JavaScript/cyan?icon=visualstudio&label)
-![TypeScript](https://badgen.net/badge/Language/TypeScript?icon=typescript&label)
-![Rust](https://badgen.net/badge/Language/Rust?icon=visualstudio&label)
-![Go](https://badgen.net/badge/Language/Go/grey?icon=visualstudio&label)
-![C++](https://badgen.net/badge/Language/C++/blue?icon=visualstudio&label)
-![C](https://badgen.net/badge/Language/C/black?icon=visualstudio&label)
-![Zig](https://badgen.net/badge/Language/Zig/black?icon=visualstudio&label)
+#### Top
+
+- `Rust`, The main language used in recent years.
+- `JavaScript/TypeScript`, The technology stack mainly used in the early years.
+
+#### Normal
+
+- `Go`, Golang is very simple, I have mastered it so far, but I don’t have a deep understanding.
+- `C++`, My current degree: c with class + a little std.
+- `C`, The current problem is that the toolchain is hard for me to use.
+- `Zig`, in the process of learning.
+
+#### Keywords
+
+`WebRTC`, `FFmpeg`, `WebAssembly`, `Node.Js`, `Vue.js`, `Embedded`, `Media-Server`, `Web-Page`, `Video-Audio`

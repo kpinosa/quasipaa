@@ -13,6 +13,7 @@ jobs:
         git clone https://github.com/mycrl/zine
         cd zine
         cargo install --path .
+        rm -rf ./zine
     - name: Build docs
       run: npm run build
     - name: Commit to repo

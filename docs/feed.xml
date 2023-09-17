@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Mr.Panda</title>
     <subtitle></subtitle>
-    <updated>2022-12-31T03:38:09.394986500+08:00</updated>
+    <updated>2023-09-17T01:23:31.610212167+00:00</updated>
     <id>https://mycrl.github.io/Mycrl</id>
     <link href="https://mycrl.github.io/Mycrl/feed.xml" rel="self" type="application/atom+xml" />
     <link href="https://mycrl.github.io/Mycrl" rel="alternate" type="text/html" />
@@ -138,7 +138,7 @@
 <tr><td>value</td><td></td><td>属性内容</td></tr>
 </tbody></table>
 <blockquote>
-<p>属性内容为了对齐会存在填充位，长度为<code>4</code>的倍数，如果不足则填充<code>0</code>，如：内容长度为<code>5</code>，则<code>len</code>为<code>5</code>，但<code>value</code>的长度为<code>8</code> | 填充<code>3</code>个<code>0</code> | 读取<code>value</code>的时候需要排除掉填充位.</p>
+<p>属性内容为了对齐会存在填充位，长度为<code>4</code>的倍数，如果不足则填充<code>0</code>，如：内容长度为<code>5</code>，则<code>len</code>为<code>5</code>，但<code>value</code>的长度为<code>8</code>， 填充<code>3</code>个<code>0</code>， 读取<code>value</code>的时候需要排除掉填充位.</p>
 </blockquote>
 <h4 id="属性类型" class="toc-item flex items-center group scroll-mt-20">
     属性类型

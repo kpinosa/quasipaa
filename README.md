@@ -11,7 +11,6 @@
 - `Kotlin`, Hey! I only use kotlin to write SDKs for android apps!
 - `C#`, Use it only to develop plugins for unity projects.
 - `Scala`, I've almost forgotten all about it.
-- `Zig`, in the process of learning.
 
 #### Keywords
 

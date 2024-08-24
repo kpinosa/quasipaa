@@ -1,4 +1,4 @@
-As you can see, I am probably a person who focuses on audio and video development, but I also know something about traditional front-end and back-end. To sum up, I know a little bit of everything, but I can't say I am proficient in it.
+As you can see, I am probably a person who focuses on audio and video development, but I also know a little about traditional front-end and back-end. To sum up, I know a little about many things, but I am not proficient in them.
 
 - `Rust`, The main language used in recent years.
 - `JavaScript/TypeScript`, The technology stack mainly used in the early years.

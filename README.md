@@ -1,5 +1,3 @@
-As you can see, I am probably a person who focuses on audio and video development, but I also know a little about traditional front-end and back-end. To sum up, I know a little about many things, but I am not proficient in them.
-
 - `Rust`, The main language used in recent years.
 - `JavaScript/TypeScript`, The technology stack mainly used in the early years.
 - `Go`, Golang is very simple, I have mastered it so far, but I don’t have a deep understanding.
